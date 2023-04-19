@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View,TextInput , value,KeyboardAvoidingView} from 'react-native';
+import { StyleSheet, Text, View,TextInput , TouchableOpacity,value,KeyboardAvoidingView} from 'react-native';
 import  Mapbox from '@rnmapbox/maps';
 import * as Location from 'expo-location';
 
@@ -11,6 +11,42 @@ export default function App() {
   const [getLocation, setLocation] = useState([]); 
   const [latitude,setLatitude]=useState(73)
   const [longitude,setLongitude]=useState(33)
+  const [centerLat,setCenterLat]=useState(70)
+  const [centerLong,setCenterLong]=useState(33)
+
+  const updateLatLong = () => {
+    if(latitude!=null && longitude!=null){
+      if((longitude<= 180) && (longitude>= -180) && (latitude<= 90) && (latitude>= -90)) {
+        console.log('updating center lat '+ latitude)
+        console.log('updating center long '+ longitude)
+        updateCenter()
+      }
+      else {
+        if(latitude>90 || latitude < -90){
+          alert('invalid latitude')
+        }
+        if(longitude>180 || latitude<-180){
+          alert('invalid longitude')
+        }
+      }
+    }
+    else {
+      alert('enter values')
+    }
+  }
+
+  const updateCenter = () => {
+    setCenterLat(latitude)
+    setCenterLong(longitude)
+  }
+
+  const resetCenter = ([a,b]) => {
+    setCenterLat(a)
+    setCenterLong(b)
+    setLatitude(a)
+    setLongitude(b)
+  }
+  
   useEffect(() => {
     (async () => {
       
@@ -20,38 +56,102 @@ export default function App() {
       }  else {
         console.log('Permission to access location was denied');
       }
-  
+
       let location = await Location.getCurrentPositionAsync({});
       console.log('getting the location')
+      setLocation([location.coords.latitude, location.coords.longitude]);
+      setCenterLat(location.coords.latitude)
+      setCenterLong(location.coords.longitude)
       setLatitude(location.coords.latitude)
       setLongitude(location.coords.longitude)
-
-      setLocation(location);
-      console.log(location)
+      console.log(getLocation)
 
     })();
   }, []);
 
   return (
-    
     <KeyboardAvoidingView style={styles.page}>
       <StatusBar style={false}/>
-      <View style={{width: '80%', position: 'absolute', top: 50,}}>
+      <View style={{width: '90%', position: 'absolute', top: 50,}}>
+          <View style={{flexDirection: 'row', marginTop: 10}}>
+            
+            <View style={{borderRadius: 12, backgroundColor: 'white', borderBottomColor: 'red', width: '25%'}}>
+              <TextInput
+                style={{paddingLeft: 10,height: 50, color: 'black'}}
+                placeholder='latitude' placeholderTextColor='green
+                '
+                onChangeText={text => {
+                  const value = parseFloat(text);
+                  if (!isNaN(value)) {
+                    setLatitude(value);
+                  }
+                }}
+              >
+              <Text>{latitude}</Text>
+              </TextInput>
+            </View>
 
-          <TextInput 
-          style={{paddingLeft: 10,height: 50,borderRadius: 12, backgroundColor: 'white', borderBottomColor: 'red', color: 'black'}}
-          placeholder='Search' placeholderTextColor='gray'
-          />
-        </View>
+            <View style={{borderRadius: 12, backgroundColor: 'white', borderBottomColor: 'red', width: '25%',marginLeft: 10,}}>
+              <TextInput 
+                style={{paddingLeft: 10, height: 50,borderRadius: 12, backgroundColor: 'white', borderBottomColor: 'red', color: 'black'}}
+                placeholder='longitude' placeholderTextColor='gray'
+                onChangeText={text => {
+                  const value = parseFloat(text);
+                  if (!isNaN(value)) {
+                    setLongitude(value);
+                  }
+                }}
+              >
+                <Text>{longitude}</Text>
+              </TextInput>
+            </View>
+            
+            <TouchableOpacity 
+              style={{
+                backgroundColor: '#1b1c1e',
+                borderRadius: 10,
+                marginLeft: 10,
+                padding: 8,
+                alignItems: 'center',
+                borderColor: 'green',
+                borderWidth: 4 }}
+              onPress={() => updateLatLong(longitude,latitude)}
+            >
+              <Text style={{color: 'white',fontSize: 15}}>
+                Search
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={{
+                backgroundColor: '#1b1c1e',
+                borderRadius: 10,
+                marginLeft: 10,
+                padding: 8,
+                alignItems: 'center',
+                borderColor: 'green',
+                borderWidth: 4 }}
+                onPress={() => resetCenter(getLocation)}
+            >
+              <Text style={{color: 'white',fontSize: 15}}>
+                Reset
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={{color: 'white'}}> latitude</Text>
+            <Text style={{color: 'white', marginLeft: 40}}>  longitude</Text>
+          </View>
+      </View>
 
       <View style={styles.mapcontainer}>
-
-          <Mapbox.MapView 
-            style={styles.map}
-            styleURL={'mapbox://styles/mustafa04/clgkgr94r008901qtcri1e6m3'}>
-            <Mapbox.Camera zoomLevel={17}  centerCoordinate={[longitude,latitude]}  />
-            </Mapbox.MapView>
-
+        <Mapbox.MapView 
+          style={styles.map}
+          styleURL={'mapbox://styles/mustafa04/clgkgr94r008901qtcri1e6m3'}>
+          <Mapbox.Camera 
+            zoomLevel={17}
+            centerCoordinate={[centerLong,centerLat]}  />
+        </Mapbox.MapView>
       </View>
     </KeyboardAvoidingView>
   );
@@ -66,12 +166,12 @@ const styles = StyleSheet.create({
   },
   mapcontainer: {
     position: 'absolute',
-    flex: 0.8,
+    flex: 1,
     bottom: 0,
-    height: '85%',
+    height: '80%',
     width: '100%',
   },
   map: {
-    flex: 1
+    flex: 1,
   }
 });

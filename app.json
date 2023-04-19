@@ -3,7 +3,6 @@
     "name": "mapbox",
     "slug": "mapbox",
     "version": "1.0.0",
-    "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -21,10 +20,42 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.mustafa_bilal04.mapbox",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.FOREGROUND_SERVICE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsImpl": "mapbox",
+          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoibXVzdGFmYTA0IiwiYSI6ImNsZ2twNXppYjFpMHYzaHQxanYzZDl5cDcifQ.CLJU8SfheuofR4Qzos-zHA"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow this app to use your location."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "55980f55-60af-4b21-8609-07b85663d850"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/55980f55-60af-4b21-8609-07b85663d850"
     }
   }
 }

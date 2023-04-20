@@ -28,7 +28,6 @@ export default function App() {
 
     try{
       const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${x}%20to.json?proximity=ip&access_token=sk.eyJ1IjoibXVzdGFmYTA0IiwiYSI6ImNsZ2twNXppYjFpMHYzaHQxanYzZDl5cDcifQ.CLJU8SfheuofR4Qzos-zHA`, {
-      // const res = await fetch(`https://api.mapbox.com/search/v1/forward/${x}?&access_token=sk.eyJ1IjoibXVzdGFmYTA0IiwiYSI6ImNsZ2twNXppYjFpMHYzaHQxanYzZDl5cDcifQ.CLJU8SfheuofR4Qzos-zHA`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -79,6 +78,8 @@ export default function App() {
     setLatitude(a)
     setLongitude(b)
     setzoomLevel(10)
+    setSearchText('')
+
   }
 
   const resetCenter = ([a,b]) => {
@@ -86,6 +87,7 @@ export default function App() {
     setCenterLong(b)
     setLatitude(a)
     setLongitude(b)
+    setSearchText('')
   }
   
   useEffect(() => {
@@ -152,32 +154,32 @@ export default function App() {
             
           <TouchableOpacity 
             style={{
-              backgroundColor: '#1b1c1e',
+              backgroundColor: 'green',
               borderRadius: 10,
               marginLeft: 10,
               padding: 8,
               alignItems: 'center',
-              borderColor: 'green',
+              borderColor: 'darkseagreen',
               borderWidth: 4 }}
             onPress={() => updateLatLong(longitude,latitude)}
           >
-            <Text style={{color: 'white',fontSize: 15}}>
+            <Text style={{color: 'white',fontSize: 15,fontWeight: 'bold'}}>
               Search
             </Text>
           </TouchableOpacity>
 
             <TouchableOpacity 
               style={{
-                backgroundColor: '#1b1c1e',
+                backgroundColor: 'green',
                 borderRadius: 10,
                 marginLeft: 10,
                 padding: 8,
                 alignItems: 'center',
-                borderColor: 'green',
+                borderColor: 'darkseagreen',
                 borderWidth: 4 }}
                 onPress={() => resetCenter(getLocation)}
             >
-              <Text style={{color: 'white',fontSize: 15}}>
+              <Text style={{color: 'white',fontSize: 15,fontWeight: 'bold'}}>
                 Reset
               </Text>
             </TouchableOpacity>
@@ -196,32 +198,32 @@ export default function App() {
           
           <TouchableOpacity 
             style={{
-              backgroundColor: '#1b1c1e',
+              backgroundColor: 'green',
               borderRadius: 10,
               marginLeft: 10,
               padding: 8,
               alignItems: 'center',
-              borderColor: 'green',
+              borderColor: 'darkseagreen',
               borderWidth: 4 }}
             onPress={()=>Search(searchText)}
           >
-            <Text style={{color: 'white',fontSize: 15}}>
+            <Text style={{color: 'white',fontSize: 15,fontWeight: 'bold'}}>
               Search
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={{
-              backgroundColor: '#1b1c1e',
+              backgroundColor: 'green',
               borderRadius: 10,
               marginLeft: 10,
               padding: 8,
               alignItems: 'center',
-              borderColor: 'green',
+              borderColor: 'darkseagreen',
               borderWidth: 4 }}
             onPress={()=>setzoomLevel(0)}
           >
-            <Text style={{color: 'white',fontSize: 15}}>
+            <Text style={{color: 'white',fontSize: 15,fontWeight: 'bold'}}>
               world
             </Text>
           </TouchableOpacity>
@@ -230,31 +232,31 @@ export default function App() {
         <View style={{ marginTop: 60,}}>
           <TouchableOpacity 
               style={{
-                backgroundColor: '#1b1c1e',
+                backgroundColor: 'green',
                 height: 50,
                 width: 50,
                 borderRadius: 10,
                 padding: 8,
                 alignItems: 'center',
-                borderColor: 'green',
+                borderColor: 'darkseagreen',
                 borderWidth: 4 }}
               onPress={zoomIn}
             >
-              <Text style={{color: 'white',fontSize: 20}}>
+              <Text style={{color: 'white',fontSize: 20,fontWeight: 'bold'}}>
                 +
               </Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
               style={{
-                backgroundColor: '#1b1c1e',
+                backgroundColor: 'green',
                 height: 50,
                 width: 50,
                 borderRadius: 10,
                 marginTop: 10,
                 padding: 8,
                 alignItems: 'center',
-                borderColor: 'green',
+                borderColor: 'darkseagreen',
                 borderWidth: 4 }}
               onPress={zoomOut}
             >

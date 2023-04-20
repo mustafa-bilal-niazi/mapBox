@@ -14,12 +14,36 @@ export default function App() {
   const [centerLat,setCenterLat]=useState(30)
   const [centerLong,setCenterLong]=useState(73)
   const [zoomLevel,setzoomLevel]=useState(16)
+  const[searchText,setSearchText]=useState('')
 
   const zoomIn = () => {
     setzoomLevel(zoomLevel+1)
   }
   const zoomOut = () => {
     setzoomLevel(zoomLevel-1)
+  }
+
+  const Search = async(x) => {
+    
+
+    try{
+      const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${x}%20to.json?proximity=ip&access_token=sk.eyJ1IjoibXVzdGFmYTA0IiwiYSI6ImNsZ2twNXppYjFpMHYzaHQxanYzZDl5cDcifQ.CLJU8SfheuofR4Qzos-zHA`, {
+      // const res = await fetch(`https://api.mapbox.com/search/v1/forward/${x}?&access_token=sk.eyJ1IjoibXVzdGFmYTA0IiwiYSI6ImNsZ2twNXppYjFpMHYzaHQxanYzZDl5cDcifQ.CLJU8SfheuofR4Qzos-zHA`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const resJson = await res.json();
+      console.log(`response: ${resJson}`)
+      console.log(resJson)
+      console.log(resJson["features"][0]["geometry"]["coordinates"])
+      resetCenter2(resJson["features"][0]["geometry"]["coordinates"])
+    }
+    catch(error){
+      alert(error.message)
+      console.log(`ganda error:${error}`)
+    }
   }
 
   const updateLatLong = () => {
@@ -47,6 +71,14 @@ export default function App() {
   const updateCenter = () => {
     setCenterLat(latitude)
     setCenterLong(longitude)
+  }
+
+  const resetCenter2 = ([b,a]) => {
+    setCenterLat(a)
+    setCenterLong(b)
+    setLatitude(a)
+    setLongitude(b)
+    setzoomLevel(10)
   }
 
   const resetCenter = ([a,b]) => {
@@ -81,54 +113,58 @@ export default function App() {
   return (
     <KeyboardAvoidingView style={styles.page}>
       <StatusBar style={false}/>
-      <View style={{width: '90%', position: 'absolute', top: 50,}}>
-          <View style={{flexDirection: 'row', marginTop: 10}}>
-            
-            <View style={{borderRadius: 12, backgroundColor: 'white', borderBottomColor: 'red', width: '25%'}}>
-              <TextInput
-                style={{paddingLeft: 10,height: 50, color: 'black'}}
-                placeholder='latitude' placeholderTextColor='gray'
-                onChangeText={text => {
-                  const value = parseFloat(text);
-                  if (!isNaN(value)) {
-                    setLatitude(value);
-                  }
-                }}
-              >
-              <Text>{latitude}</Text>
-              </TextInput>
-            </View>
+      <View style={{flex: 1, width: '90%', position: 'absolute', top: 30, zIndex: 999}}>
+        <View style= {{flexDirection: 'row'}}> 
+          <Text style={{color: 'white'}}> latitude</Text>
+          <Text style={{color: 'white', marginLeft: 40}}>  longitude</Text>
+        </View>
+        <View style={{flexDirection: 'row' }}>
 
-            <View style={{borderRadius: 12, backgroundColor: 'white', borderBottomColor: 'red', width: '25%',marginLeft: 10,}}>
-              <TextInput 
-                style={{paddingLeft: 10, height: 50,borderRadius: 12, backgroundColor: 'white', borderBottomColor: 'red', color: 'black'}}
-                placeholder='longitude' placeholderTextColor='gray'
-                onChangeText={text => {
-                  const value = parseFloat(text);
-                  if (!isNaN(value)) {
-                    setLongitude(value);
-                  }
-                }}
-              >
-                <Text>{longitude}</Text>
-              </TextInput>
-            </View>
-            
-            <TouchableOpacity 
-              style={{
-                backgroundColor: '#1b1c1e',
-                borderRadius: 10,
-                marginLeft: 10,
-                padding: 8,
-                alignItems: 'center',
-                borderColor: 'green',
-                borderWidth: 4 }}
-              onPress={() => updateLatLong(longitude,latitude)}
+          <View style={{borderRadius: 12, backgroundColor: 'white', width: '25%',}}>
+            <TextInput
+              style={{paddingLeft: 10,height: 50, color: 'black',}}
+              placeholder='latitude' placeholderTextColor='gray'
+              onChangeText={text => {
+                const value = parseFloat(text);
+                if (!isNaN(value)) {
+                  setLatitude(value);
+                }
+              }}
             >
-              <Text style={{color: 'white',fontSize: 15}}>
-                Search
-              </Text>
-            </TouchableOpacity>
+              <Text>{latitude}</Text>
+            </TextInput>
+          </View>
+
+          <View style={{ width: '25%',marginLeft: 10,}}>
+            <TextInput 
+              style={{paddingLeft: 10, height: 50,borderRadius: 12, backgroundColor: 'white', color: 'black'}}
+              placeholder='longitude' placeholderTextColor='gray'
+              onChangeText={text => {
+                const value = parseFloat(text);
+                if (!isNaN(value)) {
+                  setLongitude(value);
+                }
+              }}
+            >
+              <Text>{longitude}</Text>
+            </TextInput>
+          </View>
+            
+          <TouchableOpacity 
+            style={{
+              backgroundColor: '#1b1c1e',
+              borderRadius: 10,
+              marginLeft: 10,
+              padding: 8,
+              alignItems: 'center',
+              borderColor: 'green',
+              borderWidth: 4 }}
+            onPress={() => updateLatLong(longitude,latitude)}
+          >
+            <Text style={{color: 'white',fontSize: 15}}>
+              Search
+            </Text>
+          </TouchableOpacity>
 
             <TouchableOpacity 
               style={{
@@ -145,15 +181,59 @@ export default function App() {
                 Reset
               </Text>
             </TouchableOpacity>
+        </View>
+          
+        <View style={{flexDirection: 'row', marginTop: 10,}}>
+
+        <View style={{borderRadius: 12, backgroundColor: 'white', width: '53%',}}>
+            <TextInput
+              style={{paddingLeft: 10,height: 50, color: 'black',}}
+              placeholder='Search' placeholderTextColor='gray'
+              value={searchText}
+              onChangeText={text => setSearchText(text)}
+            />
           </View>
-          <View style={{flexDirection: 'row'}}>
-            <Text style={{color: 'white'}}> latitude</Text>
-            <Text style={{color: 'white', marginLeft: 40}}>  longitude</Text>
-            <TouchableOpacity 
+          
+          <TouchableOpacity 
+            style={{
+              backgroundColor: '#1b1c1e',
+              borderRadius: 10,
+              marginLeft: 10,
+              padding: 8,
+              alignItems: 'center',
+              borderColor: 'green',
+              borderWidth: 4 }}
+            onPress={()=>Search(searchText)}
+          >
+            <Text style={{color: 'white',fontSize: 15}}>
+              Search
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={{
+              backgroundColor: '#1b1c1e',
+              borderRadius: 10,
+              marginLeft: 10,
+              padding: 8,
+              alignItems: 'center',
+              borderColor: 'green',
+              borderWidth: 4 }}
+            onPress={()=>setzoomLevel(0)}
+          >
+            <Text style={{color: 'white',fontSize: 15}}>
+              world
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={{ marginTop: 60,}}>
+          <TouchableOpacity 
               style={{
                 backgroundColor: '#1b1c1e',
+                height: 50,
+                width: 50,
                 borderRadius: 10,
-                marginLeft: 35,
                 padding: 8,
                 alignItems: 'center',
                 borderColor: 'green',
@@ -164,11 +244,14 @@ export default function App() {
                 +
               </Text>
             </TouchableOpacity>
+            
             <TouchableOpacity 
               style={{
                 backgroundColor: '#1b1c1e',
+                height: 50,
+                width: 50,
                 borderRadius: 10,
-                marginLeft: 10,
+                marginTop: 10,
                 padding: 8,
                 alignItems: 'center',
                 borderColor: 'green',
@@ -179,22 +262,6 @@ export default function App() {
                 -
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={{
-                backgroundColor: '#1b1c1e',
-                borderRadius: 10,
-                marginLeft: 10,
-                padding: 8,
-                alignItems: 'center',
-                borderColor: 'green',
-                borderWidth: 4 }}
-              onPress={()=>setzoomLevel(0)}
-            >
-              <Text style={{color: 'white',fontSize: 15}}>
-                world
-              </Text>
-            </TouchableOpacity>
-
           </View>
       </View>
 
@@ -204,11 +271,15 @@ export default function App() {
           styleURL={'mapbox://styles/mustafa04/clgkgr94r008901qtcri1e6m3'}>
           <Mapbox.Camera 
             zoomLevel={zoomLevel}
-            centerCoordinate={[centerLong,centerLat]}  />
-          <Mapbox.PointAnnotation coordinate={[centerLong,centerLat]} />
-
+            centerCoordinate={[centerLong,centerLat]} 
+          />
+          <Mapbox.PointAnnotation 
+            id ='marker'
+            coordinate={[centerLong,centerLat]} 
+          />
         </Mapbox.MapView>
       </View>
+
     </KeyboardAvoidingView>
   );
 }
@@ -231,3 +302,4 @@ const styles = StyleSheet.create({
     flex: 1,
   }
 });
+
